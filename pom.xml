@@ -99,7 +99,7 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <version>${spring-boot.version}</version>
                 <configuration>
-                    <mainClass>com.cocoon.reggietakeout.ReggieTakeoutApplication</mainClass>
+                    <mainClass>com.cocoon.reggieTakeout.ReggieTakeoutApplication</mainClass>
                     <skip>true</skip>
                 </configuration>
                 <executions>
