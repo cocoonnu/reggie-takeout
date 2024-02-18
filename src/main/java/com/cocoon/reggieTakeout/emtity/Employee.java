@@ -7,11 +7,7 @@ import lombok.Data;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
-/**
- * 员工实体类
- * @author cocoon
- */
-@Data //整合了Getter、Setter、ToString、EqualsAndHashCode、RequiredArgsConstructor注解。
+@Data
 public class Employee implements Serializable {
 
     private static final long serialVersionUID = 1L;

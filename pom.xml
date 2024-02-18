@@ -39,6 +39,7 @@
             <version>1.18.20</version>
         </dependency>
 
+        <!--  方便使用JSON工具包  -->
         <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>fastjson</artifactId>
@@ -54,7 +55,7 @@
         <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>druid</artifactId>
-            <version>1.1.16</version>
+            <version>1.2.8</version>
         </dependency>
 
         <dependency>
