@@ -2,7 +2,7 @@ package com.cocoon.reggieTakeout.filter;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
-import com.cocoon.reggieTakeout.common.R;
+import com.cocoon.reggieTakeout.common.GlobalResult;
 import com.cocoon.reggieTakeout.constant.GlobalConstant;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.AntPathMatcher;
@@ -45,7 +45,7 @@ public class LoginCheckFilter implements Filter {
         }
 
         // 否则的话一律响应为用户未登录
-        response.getWriter().write(JSON.toJSONString(R.error("用户未登录"), SerializerFeature.BrowserCompatible));
+        response.getWriter().write(JSON.toJSONString(GlobalResult.error("用户未登录"), SerializerFeature.BrowserCompatible));
     }
 
     public static boolean checkoutRequestURI(String requestURI, String[] urls) {
