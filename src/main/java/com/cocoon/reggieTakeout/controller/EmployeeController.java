@@ -23,6 +23,7 @@ public class EmployeeController {
     @Autowired
     private EmployeeService employeeService;
 
+    /** 员工登入 **/
     @PostMapping("/login")
     public GlobalResult<Employee> login(HttpServletRequest request, @RequestBody Employee employee) {
         // 密码加密
@@ -43,15 +44,17 @@ public class EmployeeController {
         return GlobalResult.success(queriedEmployee);
     }
 
+    /** 员工登出 **/
     @PostMapping("/logout")
     public GlobalResult<String> logout(HttpServletRequest request) {
         request.getSession().removeAttribute("employeeId");
         return GlobalResult.success("退出成功");
     }
 
+    /** 新增员工 **/
     @PostMapping
-    public GlobalResult<Employee> save(HttpServletRequest request, @RequestBody Employee employee) {
-        // 除了前端传过来的属性还需要封装其他属性，id的话mp会自动随机生成
+    public GlobalResult<String> save(HttpServletRequest request, @RequestBody Employee employee) {
+        // 除了前端传过来的属性还需要封装一些更新属性，id的话mp会自动随机生成
         employee.setPassword(DigestUtils.md5DigestAsHex("123456".getBytes()));
         employee.setCreateTime(LocalDateTime.now());
         employee.setUpdateTime(LocalDateTime.now());
@@ -61,21 +64,43 @@ public class EmployeeController {
 
         // mp新增员工
         employeeService.save(employee);
-        return GlobalResult.success(employee);
+        return GlobalResult.success("添加员工成功");
     }
 
-    @PostMapping("/page")
+    /** 更新员工 **/
+    @PutMapping()
+    public GlobalResult<String> update(HttpServletRequest request, @RequestBody Employee employee) {
+        // 需要另外再封装一些更新属性
+        Long employeeId = (Long)request.getSession().getAttribute(GlobalConstant.EMPLOYEE_ID);
+        employee.setUpdateUser(employeeId);
+        employee.setUpdateUser(employeeId);
+
+        // mp会根据主键id匹配更新
+        employeeService.updateById(employee);
+        return GlobalResult.success("更新员工成功");
+    }
+
+    /** 分页查询员工列表 **/
+    @GetMapping("/page")
     public GlobalResult<Page> page(int page, int pageSize, @RequestParam(required = false) String name) {
         log.info("page={},pageSize={},name={}", page, pageSize, name);
         Page pageInfo = new Page(page, pageSize);
 
         // 添加name搜索查询和按更新时间排序
         LambdaQueryWrapper<Employee> lqw = new LambdaQueryWrapper<>();
-        lqw.like(StringUtils.isEmpty(name), Employee::getName, name);
+        lqw.like(!StringUtils.isEmpty(name), Employee::getName, name);
         lqw.orderByDesc(Employee::getUpdateTime);
 
         // 直接进行分页查询，mp会自动将结果帮我们封装到pageInfo对象中
         employeeService.page(pageInfo, lqw);
         return GlobalResult.success(pageInfo);
+    }
+
+    /** 根据id查询员工信息 **/
+    @GetMapping("/{id}")
+    public GlobalResult<Object> getEmployeeById(@PathVariable Long id) {
+        Employee employee = employeeService.getById(id);
+        if (employee != null) return GlobalResult.success(employee);
+        return GlobalResult.error("查询员工信息失败");
     }
 }
