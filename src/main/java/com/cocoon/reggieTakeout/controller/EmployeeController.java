@@ -54,13 +54,8 @@ public class EmployeeController {
     /** 新增员工 **/
     @PostMapping
     public GlobalResult<String> save(HttpServletRequest request, @RequestBody Employee employee) {
-        // 除了前端传过来的属性还需要封装一些更新属性，id的话mp会自动随机生成
+        // 默认密码123456，主键id的话mp会自动随机生成
         employee.setPassword(DigestUtils.md5DigestAsHex("123456".getBytes()));
-        employee.setCreateTime(LocalDateTime.now());
-        employee.setUpdateTime(LocalDateTime.now());
-        Long employeeId = (Long)request.getSession().getAttribute(GlobalConstant.EMPLOYEE_ID);
-        employee.setCreateUser(employeeId);
-        employee.setUpdateUser(employeeId);
 
         // mp新增员工
         employeeService.save(employee);
@@ -70,11 +65,6 @@ public class EmployeeController {
     /** 更新员工 **/
     @PutMapping()
     public GlobalResult<String> update(HttpServletRequest request, @RequestBody Employee employee) {
-        // 需要另外再封装一些更新属性
-        Long employeeId = (Long)request.getSession().getAttribute(GlobalConstant.EMPLOYEE_ID);
-        employee.setUpdateUser(employeeId);
-        employee.setUpdateUser(employeeId);
-
         // mp会根据主键id匹配更新
         employeeService.updateById(employee);
         return GlobalResult.success("更新员工成功");
