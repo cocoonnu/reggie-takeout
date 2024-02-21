@@ -7,13 +7,11 @@ import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 
-@Slf4j
 @Component
 public class MyMetaObjectHandler implements MetaObjectHandler {
     /** 插入时自动填充字段 **/
     @Override
     public void insertFill(MetaObject metaObject) {
-        log.info("!!!!!metaObject: {}", metaObject.toString());
         metaObject.setValue("updateTime", LocalDateTime.now());
         metaObject.setValue("createTime", LocalDateTime.now());
         metaObject.setValue("updateUser", EmployeeIdThread.getEmployeeId());

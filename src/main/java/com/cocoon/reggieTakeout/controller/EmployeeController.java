@@ -73,13 +73,12 @@ public class EmployeeController {
     /** 分页查询员工列表 **/
     @GetMapping("/page")
     public GlobalResult<Page> page(int page, int pageSize, @RequestParam(required = false) String name) {
-        log.info("page={},pageSize={},name={}", page, pageSize, name);
         Page pageInfo = new Page(page, pageSize);
 
         // 添加name搜索查询和按更新时间排序
         LambdaQueryWrapper<Employee> lqw = new LambdaQueryWrapper<>();
         lqw.like(!StringUtils.isEmpty(name), Employee::getName, name);
-        lqw.orderByDesc(Employee::getUpdateTime);
+        lqw.orderByAsc(Employee::getUpdateTime);
 
         // 直接进行分页查询，mp会自动将结果帮我们封装到pageInfo对象中
         employeeService.page(pageInfo, lqw);
