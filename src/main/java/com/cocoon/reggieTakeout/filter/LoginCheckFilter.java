@@ -32,7 +32,8 @@ public class LoginCheckFilter implements Filter {
                 "/employee/login", // 登录退出登录两个接口
                 "/employee/logout",
                 "/backend/**", // 静态页面资源
-                "/front/**"
+                "/front/**",
+                "/common/**"
         };
 
         // 如果请求路径不需要拦截则放行

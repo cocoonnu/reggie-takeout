@@ -53,7 +53,7 @@ public class EmployeeController {
 
     /** 新增员工 **/
     @PostMapping
-    public GlobalResult<String> save(HttpServletRequest request, @RequestBody Employee employee) {
+    public GlobalResult<String> save(@RequestBody Employee employee) {
         // 默认密码123456，主键id的话mp会自动随机生成
         employee.setPassword(DigestUtils.md5DigestAsHex("123456".getBytes()));
 
@@ -64,7 +64,7 @@ public class EmployeeController {
 
     /** 更新员工 **/
     @PutMapping()
-    public GlobalResult<String> update(HttpServletRequest request, @RequestBody Employee employee) {
+    public GlobalResult<String> update(@RequestBody Employee employee) {
         // mp会根据主键id匹配更新
         employeeService.updateById(employee);
         return GlobalResult.success("更新员工成功");
@@ -72,8 +72,8 @@ public class EmployeeController {
 
     /** 分页查询员工列表 **/
     @GetMapping("/page")
-    public GlobalResult<Page> page(int page, int pageSize, @RequestParam(required = false) String name) {
-        Page pageInfo = new Page(page, pageSize);
+    public GlobalResult<Page<Employee>> page(int page, int pageSize, @RequestParam(required = false) String name) {
+        Page<Employee> pageInfo = new Page<>(page, pageSize);
 
         // 添加name搜索查询和按更新时间排序
         LambdaQueryWrapper<Employee> lqw = new LambdaQueryWrapper<>();
