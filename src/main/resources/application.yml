@@ -19,3 +19,8 @@ mybatis-plus:
       id-type: ASSIGN_ID
 reggie:
   path: /Users/cocoon/Work/reggie-takeout/src/main/resources/redis/
+message:
+  accessKeyId: LTAI5tPVkwyZWWDjEj4Jatkz
+  accessKeySecret: lJ4A5XVg0JEYfbLMJpoc1NKEcWfQxT
+  signName: 阿里云短信测试
+  templateCode: SMS_154950909
