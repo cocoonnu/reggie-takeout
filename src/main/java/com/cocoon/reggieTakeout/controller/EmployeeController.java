@@ -78,7 +78,7 @@ public class EmployeeController {
         // 添加name搜索查询和按更新时间排序
         LambdaQueryWrapper<Employee> lqw = new LambdaQueryWrapper<>();
         lqw.like(!StringUtils.isEmpty(name), Employee::getName, name);
-        lqw.orderByAsc(Employee::getUpdateTime);
+        lqw.orderByDesc(Employee::getUpdateTime);
 
         // 直接进行分页查询，mp会自动将结果帮我们封装到pageInfo对象中
         employeeService.page(pageInfo, lqw);

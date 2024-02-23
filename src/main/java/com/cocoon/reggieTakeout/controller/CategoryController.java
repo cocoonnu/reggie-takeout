@@ -30,7 +30,7 @@ public class CategoryController {
     public GlobalResult<Page<Category>> page(int page, int pageSize) {
         Page<Category> pageInfo = new Page<>(page, pageSize);
         LambdaQueryWrapper<Category> lqw = new LambdaQueryWrapper<>();
-        lqw.orderByAsc(Category::getSort);
+        lqw.orderByDesc(Category::getSort);
         categoryService.page(pageInfo, lqw);
         return GlobalResult.success(pageInfo);
     }
@@ -40,7 +40,7 @@ public class CategoryController {
     public GlobalResult<List<Category>> list(int type) {
         LambdaQueryWrapper<Category> lqw = new LambdaQueryWrapper<>();
         lqw.eq(Category::getType, type);
-        lqw.orderByAsc(Category::getSort).orderByDesc(Category::getUpdateTime);
+        lqw.orderByDesc(Category::getSort).orderByDesc(Category::getUpdateTime);
         List<Category> categoryList = categoryService.list(lqw);
         return GlobalResult.success(categoryList);
     }
