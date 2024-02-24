@@ -37,10 +37,9 @@ public class CategoryController {
 
     /** 分类列表按类型查询 **/
     @GetMapping("/list")
-    public GlobalResult<List<Category>> list(int type) {
+    public GlobalResult<List<Category>> list(Category category) {
         LambdaQueryWrapper<Category> lqw = new LambdaQueryWrapper<>();
-        lqw.eq(Category::getType, type);
-        lqw.orderByDesc(Category::getSort).orderByDesc(Category::getUpdateTime);
+        lqw.eq(category.getType() != null ,Category::getType, category.getType());
         List<Category> categoryList = categoryService.list(lqw);
         return GlobalResult.success(categoryList);
     }

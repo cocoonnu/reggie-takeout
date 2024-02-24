@@ -1,13 +1,16 @@
 package com.cocoon.reggieTakeout.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.cocoon.reggieTakeout.common.GlobalResult;
 import com.cocoon.reggieTakeout.constant.GlobalConstant;
 import com.cocoon.reggieTakeout.dto.DishDto;
 import com.cocoon.reggieTakeout.emtity.Category;
 import com.cocoon.reggieTakeout.emtity.Dish;
+import com.cocoon.reggieTakeout.emtity.DishFlavor;
 import com.cocoon.reggieTakeout.service.CategoryService;
+import com.cocoon.reggieTakeout.service.DishFlavorService;
 import com.cocoon.reggieTakeout.service.DishService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
@@ -27,6 +30,9 @@ public class DishController {
     private DishService dishService;
 
     @Autowired
+    private DishFlavorService dishFlavorService;
+
+    @Autowired
     private CategoryService categoryService;
 
     /** 新增菜品 **/
@@ -38,14 +44,32 @@ public class DishController {
 
     /** 查询菜品列表 **/
     @GetMapping("/list")
-    public GlobalResult<List<Dish>> getList(Dish dish) {
-        // 查询条件
+    public GlobalResult<List<DishDto>> getList(Dish dish) {
+        // 先封装dishList
         LambdaQueryWrapper<Dish> lqw = new LambdaQueryWrapper<>();
         lqw.eq(dish.getCategoryId() != null ,Dish::getCategoryId, dish.getCategoryId());
         lqw.eq(Dish::getStatus, 1);
-
         List<Dish> dishList = dishService.list(lqw);
-        return GlobalResult.success(dishList);
+
+        // 再封装dishDtoList
+        List<DishDto> dishDtoList = dishList.stream().map(item -> {
+            DishDto dishDto = new DishDto();
+            BeanUtils.copyProperties(item, dishDto);
+
+            // 获取categoryName
+            Category category = categoryService.getById(item.getCategoryId());
+            if (category != null) dishDto.setCategoryName(category.getName());
+
+            // 获取flavors
+            LambdaQueryWrapper<DishFlavor> dishFlavorLambdaQueryWrapper = new LambdaQueryWrapper<>();
+            dishFlavorLambdaQueryWrapper.eq(DishFlavor::getDishId, item.getId());
+            List<DishFlavor> dishFlavorList = dishFlavorService.list(dishFlavorLambdaQueryWrapper);
+            if (dishFlavorList != null) dishDto.setFlavors(dishFlavorList);
+
+            return dishDto;
+        }).collect(Collectors.toList());
+
+        return GlobalResult.success(dishDtoList);
     }
 
     /** 分页查询菜品列表 **/
@@ -101,11 +125,10 @@ public class DishController {
     /** 启售、停售菜品 **/
     @PostMapping("/status/{status}")
     public GlobalResult<String> batchUpdateStatus(@PathVariable Integer status, @RequestParam List<Long> ids) {
-        List<Dish> dishList = dishService.listByIds(ids);
-        for (Dish dish : dishList) {
-            dish.setStatus(status);
-        }
-        dishService.updateBatchById(dishList);
+        LambdaUpdateWrapper<Dish> lqw = new LambdaUpdateWrapper<>();
+        lqw.in(Dish::getId, ids);
+        lqw.set(Dish::getStatus, status);
+        dishService.update(lqw);
         String statusStr = status == 1 ? "启售" : "停售";
         return GlobalResult.success("批量" + statusStr + "成功");
     }

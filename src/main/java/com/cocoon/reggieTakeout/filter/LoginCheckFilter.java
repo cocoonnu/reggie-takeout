@@ -46,6 +46,8 @@ public class LoginCheckFilter implements Filter {
             return;
         }
 
+        // 测试使用，避免每次都需要重新登录后台
+        if (employeeId == null) employeeId = Long.valueOf("1759482252352401410");
         // 如果员工存在session登录状态则放行（后台已登录）
         if (employeeId != null) {
             BaseContext.setCurrentId(employeeId);
@@ -53,6 +55,8 @@ public class LoginCheckFilter implements Filter {
             return;
         }
 
+        // 测试使用，避免每次都需要重新登录前台
+        if (userId == null) userId = Long.valueOf("1760987001203585026");
         // 如果用户存在session登录状态则放行（前台已登录）
         if (userId != null) {
             BaseContext.setCurrentId(userId);
