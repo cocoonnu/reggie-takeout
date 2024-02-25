@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 
 @Component
 public class MyMetaObjectHandler implements MetaObjectHandler {
-    /** 插入时自动填充字段 **/
+    /** 插入时自动填充字段() **/
     @Override
     public void insertFill(MetaObject metaObject) {
         metaObject.setValue("updateTime", LocalDateTime.now());

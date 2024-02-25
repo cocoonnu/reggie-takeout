@@ -3,19 +3,14 @@ package com.cocoon.reggieTakeout.controller;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.cocoon.reggieTakeout.common.GlobalResult;
-import com.cocoon.reggieTakeout.constant.GlobalConstant;
 import com.cocoon.reggieTakeout.dto.SetmealDto;
-import com.cocoon.reggieTakeout.emtity.Dish;
-import com.cocoon.reggieTakeout.emtity.Employee;
 import com.cocoon.reggieTakeout.emtity.Setmeal;
 import com.cocoon.reggieTakeout.service.CategoryService;
-import com.cocoon.reggieTakeout.service.SetmealDishService;
 import com.cocoon.reggieTakeout.service.SetmealService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.nio.file.Path;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -78,5 +73,16 @@ public class SetmealController {
     public GlobalResult<String> delete(@RequestParam List<Long> ids) {
         setmealService.deleteWithSetmealDish(ids);
         return GlobalResult.success("删除套餐成功");
+    }
+
+    /** 套餐列表查询 **/
+    @GetMapping("/list")
+    public GlobalResult<List<Setmeal>> list(Setmeal setmeal){
+        LambdaQueryWrapper<Setmeal> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(setmeal.getCategoryId() != null,Setmeal::getCategoryId,setmeal.getCategoryId());
+        queryWrapper.eq(setmeal.getStatus() != null,Setmeal::getStatus,setmeal.getStatus());
+        queryWrapper.orderByDesc(Setmeal::getUpdateTime);
+        List<Setmeal> list = setmealService.list(queryWrapper);
+        return GlobalResult.success(list);
     }
 }
