@@ -9,11 +9,13 @@ import com.cocoon.reggieTakeout.service.EmployeeService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.util.DigestUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @RestController
@@ -22,6 +24,9 @@ public class EmployeeController {
 
     @Autowired
     private EmployeeService employeeService;
+
+    @Autowired
+    private RedisTemplate redisTemplate;
 
     /** 员工登入 **/
     @PostMapping("/login")
@@ -40,14 +45,16 @@ public class EmployeeController {
         if (!queriedEmployee.getPassword().equals(password)) return GlobalResult.error("密码错误");
         if (queriedEmployee.getStatus() == 0) return GlobalResult.error("该用户已被禁用");
 
-        request.getSession().setAttribute(GlobalConstant.EMPLOYEE_ID, queriedEmployee.getId());
+        // request.getSession().setAttribute(GlobalConstant.EMPLOYEE_ID, queriedEmployee.getId());
+        redisTemplate.opsForValue().set(GlobalConstant.USER_ID, queriedEmployee.getId(), 7, TimeUnit.DAYS);
         return GlobalResult.success(queriedEmployee);
     }
 
     /** 员工登出 **/
     @PostMapping("/logout")
     public GlobalResult<String> logout(HttpServletRequest request) {
-        request.getSession().removeAttribute("employeeId");
+        // request.getSession().removeAttribute(GlobalConstant.EMPLOYEE_ID);
+        redisTemplate.delete(GlobalConstant.EMPLOYEE_ID);
         return GlobalResult.success("退出成功");
     }
 

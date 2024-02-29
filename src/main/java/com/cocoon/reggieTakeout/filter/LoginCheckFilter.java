@@ -6,6 +6,9 @@ import com.cocoon.reggieTakeout.common.BaseContext;
 import com.cocoon.reggieTakeout.common.GlobalResult;
 import com.cocoon.reggieTakeout.constant.GlobalConstant;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.stereotype.Component;
 import org.springframework.util.AntPathMatcher;
 
 import javax.servlet.*;
@@ -15,8 +18,12 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @Slf4j
+@Component
 @WebFilter(filterName = "LoginCheckFilter", urlPatterns = "/*")
 public class LoginCheckFilter implements Filter {
+    @Autowired
+    private RedisTemplate redisTemplate;
+
     /** 路径字符串匹配对象 **/
     public static final AntPathMatcher PATH_MATCHER = new AntPathMatcher();
 
@@ -26,8 +33,10 @@ public class LoginCheckFilter implements Filter {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         HttpServletResponse response = (HttpServletResponse) servletResponse;
         String requestURI = request.getRequestURI();
-        Long userId = (Long) request.getSession().getAttribute(GlobalConstant.USER_ID);
-        Long employeeId = (Long) request.getSession().getAttribute(GlobalConstant.EMPLOYEE_ID);
+        // Long userId = (Long) request.getSession().getAttribute(GlobalConstant.USER_ID);
+        Long userId = (Long) redisTemplate.opsForValue().get(GlobalConstant.USER_ID);
+        // Long employeeId = (Long) request.getSession().getAttribute(GlobalConstant.EMPLOYEE_ID);
+        Long employeeId = (Long) redisTemplate.opsForValue().get(GlobalConstant.EMPLOYEE_ID);
 
         // 不需要拦截的请求路径
         String[] urls = new String[]{
@@ -47,7 +56,7 @@ public class LoginCheckFilter implements Filter {
         }
 
         // 测试使用，避免每次都需要重新登录后台
-        if (employeeId == null) employeeId = Long.valueOf("1759482252352401410");
+//        if (employeeId == null) employeeId = Long.valueOf("1759482252352401410");
         // 如果员工存在session登录状态则放行（后台已登录）
         if (employeeId != null) {
             BaseContext.setCurrentId(employeeId);
@@ -56,7 +65,7 @@ public class LoginCheckFilter implements Filter {
         }
 
         // 测试使用，避免每次都需要重新登录前台
-        if (userId == null) userId = Long.valueOf("1760987001203585026");
+//        if (userId == null) userId = Long.valueOf("1760987001203585026");
         // 如果用户存在session登录状态则放行（前台已登录）
         if (userId != null) {
             BaseContext.setCurrentId(userId);
