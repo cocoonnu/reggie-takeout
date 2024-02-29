@@ -51,6 +51,8 @@ public class DishController {
     /** 按照菜品分类查询菜品列表 **/
     @GetMapping("/list")
     public GlobalResult<List<DishDto>> getList(Dish dish) {
+        redisTemplate.opsForValue().set("dish_test", dish, 30, TimeUnit.MINUTES);
+
         // 获取缓存，如果存在则直接返回
         List<DishDto> dishDtoList = null;
         String dishDtoListRedisKey = "dish_" + dish.getCategoryId();

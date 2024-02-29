@@ -13,6 +13,9 @@ spring:
     host: 127.0.0.1
     port: 6379
     database: 0
+  cache:
+    redis:
+      time-to-live: 1800000 # 设置缓存数据的过期时间
 mybatis-plus:
   configuration:
     map-underscore-to-camel-case: true
@@ -23,7 +26,7 @@ mybatis-plus:
 reggie:
   path: /Users/cocoon/Work/reggie-takeout/src/main/resources/redis/
 message:
-  accessKeyId: LTAI5tPVkwyZWWDjEj4Jatkz
-  accessKeySecret: lJ4A5XVg0JEYfbLMJpoc1NKEcWfQxT
+  accessKeyId: accessKeyId
+  accessKeySecret: accessKeySecret
   signName: 阿里云短信测试
   templateCode: SMS_154950909

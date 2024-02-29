@@ -9,6 +9,8 @@ import com.cocoon.reggieTakeout.service.CategoryService;
 import com.cocoon.reggieTakeout.service.SetmealService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -25,6 +27,7 @@ public class SetmealController {
 
     /** 新增套餐 **/
     @PostMapping
+    @CacheEvict(value = "setmealCache", key = "#setmealDto.categoryId")
     public GlobalResult<String> add(@RequestBody SetmealDto setmealDto) {
         setmealService.saveWithSetmealDish(setmealDto);
         return GlobalResult.success("新增套餐成功");
@@ -58,6 +61,7 @@ public class SetmealController {
 
     /** 启售、停售套餐 **/
     @PostMapping("/status/{status}")
+    @CacheEvict(value = "setmealCache", allEntries = true)
     public GlobalResult<String> updateStatus(@PathVariable Integer status, @RequestParam List<Long> ids) {
         List<Setmeal> setmealList = setmealService.listByIds(ids);
         for (Setmeal setmeal : setmealList) {
@@ -70,6 +74,7 @@ public class SetmealController {
 
     /** 删除套餐 **/
     @DeleteMapping
+    @CacheEvict(value = "setmealCache", allEntries = true)
     public GlobalResult<String> delete(@RequestParam List<Long> ids) {
         setmealService.deleteWithSetmealDish(ids);
         return GlobalResult.success("删除套餐成功");
@@ -77,6 +82,7 @@ public class SetmealController {
 
     /** 套餐列表查询 **/
     @GetMapping("/list")
+    @Cacheable(value = "setmealCache", key = "#setmeal.categoryId")
     public GlobalResult<List<Setmeal>> list(Setmeal setmeal){
         LambdaQueryWrapper<Setmeal> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(setmeal.getCategoryId() != null,Setmeal::getCategoryId,setmeal.getCategoryId());
