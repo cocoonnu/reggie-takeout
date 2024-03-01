@@ -46,7 +46,12 @@ public class LoginCheckFilter implements Filter {
                 "/front/**",
                 "/common/**",
                 "/user/sendMsg", // 用户登录退出登录
-                "/user/login"
+                "/user/login",
+
+                "/doc.html",
+                "/webjars/**",
+                "/swagger-resources",
+                "/v2/api-docs"
         };
 
         // 如果请求路径不需要拦截则放行
